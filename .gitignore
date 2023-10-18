@@ -1,0 +1,86 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+__pycache__/*
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+env/
+ENV/
+
+# Compiled Python files
+*.pyc
+*.pyo
+*.pyd
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*~
+*.bak
+
+# Logs
+*.log
+
+# Cache and temp files
+__pycache__/
+*.swp
+*.bak
+*.tmp
+*.log
+
+# Environment and Docker Compose files
+.env
+.env.local
+.dockerignore
+
+# Database files
+db.sqlite
+db.sqlite3
+
+# Dependency directories
+__pypackages__/
+lib/
+lib64/
+bin/
+include/
+Scripts/
+.eggs/
+parts/
+develop-eggs/
+.installed.cfg
+downloads/
+build/
+dist/
+eggs/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/
+
+# Ignore FastAPI's automatic reloader files
+__pypackages__/
+server.py
+
+# Ignore migration files for databases
+alembic/
+migrations/
+
+# Ignore test data and artifacts
+test_data/
+test_results/
+
+# Ignore generated documentation
+docs/
+
+# Ignore generated UI files
+app/static/
+
+# Ignore generated database files
+database/
