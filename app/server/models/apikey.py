@@ -1,19 +1,23 @@
 from typing import Optional
-
+import secrets
 from pydantic import BaseModel, EmailStr, Field
+
+
+def GenerateApiKey():
+    generated_key = secrets.token_urlsafe(32)
+    return generated_key
 
 
 class ApikeySchema(BaseModel):
     fullname: str = Field(...)
     email: EmailStr = Field(...)
-    apikey: str = Field(...)
+    apikey: str = GenerateApiKey()
 
     class Config:
         schema_extra = {
             "example": {
                 "fullname": "John Doe",
                 "email": "jdoe@x.edu.ng",
-                "apikey": "TDnHVp6ed1bFHFS0Bno44Vkly2wSZlNU",  # 32 char alphanum
             }
         }
 
@@ -28,7 +32,6 @@ class UpdateApikeyModel(BaseModel):
             "example": {
                 "fullname": "John Doe Test",
                 "email": "jdoe@x.edu.ng",
-                "apikey": "TDnHVp6ed1bFHFS0Bno44Vkly2wSZlNU",  # 32 char alphanum
             }
         }
 

@@ -5,7 +5,7 @@ MONGO_DETAILS = "mongodb://localhost:27017"
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 
-database = client.apikey
+database = client.microservice_database
 
 apikey_collection = database.get_collection("apikey_collection")
 
@@ -21,11 +21,16 @@ def apikey_helper(apikey) -> dict:
     }
 
 # Retrieve all apikey present in the database
+
+
 async def retrieve_apikeys():
     apikeys = []
     async for apikey in apikey_collection.find():
         apikeys.append(apikey_helper(apikey))
-    return apikeys
+    if len(apikeys) == 0:
+        return None
+    else:
+        return apikeys[0]
 
 
 # Add a new student into to the database
