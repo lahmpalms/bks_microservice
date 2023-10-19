@@ -40,6 +40,13 @@ async def add_apikey(apikey_data: dict) -> dict:
     return apikey_helper(new_apikey)
 
 
+async def find_api(id: str) -> dict:
+    result = await apikey_collection.find_one({"apikey": id})
+    if result:
+        return True
+    else:
+        return False
+
 # # Retrieve a student with a matching ID
 # async def retrieve_student(id: str) -> dict:
 #     student = await student_collection.find_one({"_id": ObjectId(id)})
