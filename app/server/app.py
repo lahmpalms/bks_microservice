@@ -1,15 +1,21 @@
-from fastapi import FastAPI,  HTTPException, Security
+from fastapi import FastAPI,  HTTPException, Security, Request
 from fastapi.security import APIKeyHeader
 from server.routes.apikey import router as ApikeyRouter
-from server.security import auth as Autholization
+import time
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+api_endpoint = os.getenv('API_ENDPOINT')
+
 
 app = FastAPI()
 
 
-app.include_router(ApikeyRouter, tags=["Apikey"], prefix="/api/v1/apikey")
+app.include_router(ApikeyRouter, tags=[
+                   "Apikey"], prefix=f"{api_endpoint}/apikey")
 
 
 @app.get("/", tags=["Root"])
 async def read_root():
-    resp = await Autholization.get_api_data()
-    return {"message": "Welcome to this fantastic app!", 'response': resp}
+    return {"message": "Welcome to this fantastic app!"}

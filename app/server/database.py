@@ -1,13 +1,18 @@
 import motor.motor_asyncio
 from bson.objectid import ObjectId
+import os
+from dotenv import load_dotenv
 
-MONGO_DETAILS = "mongodb://localhost:27017"
+load_dotenv()
+MONGO_DETAILS = os.getenv("DB_URL")
+
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 
 database = client.microservice_database
 
 apikey_collection = database.get_collection("apikey_collection")
+log_collection = database.get_collection("log_collection")
 
 # helper function
 
@@ -33,7 +38,6 @@ async def retrieve_apikeys():
         return apikeys[0]
 
 
-# Add a new student into to the database
 async def add_apikey(apikey_data: dict) -> dict:
     apikey = await apikey_collection.insert_one(apikey_data)
     new_apikey = await apikey_collection.find_one({"_id": apikey.inserted_id})
@@ -46,6 +50,12 @@ async def find_api(id: str) -> dict:
         return True
     else:
         return False
+
+
+async def add_log(log_data: dict) -> dict:
+    log = await log_collection.insert_one(log_data)
+    new_log = await log_collection.find_one({"_id": log.inserted_id})
+    return (new_log)
 
 # # Retrieve a student with a matching ID
 # async def retrieve_student(id: str) -> dict:

@@ -1,19 +1,18 @@
-from fastapi import APIRouter, Body, Header, Security, HTTPException
-from fastapi.encoders import jsonable_encoder
-from fastapi.security import APIKeyHeader
-
-from server.database import (
-    retrieve_apikeys,
-    add_apikey
-)
+from server.security.auth import (check_api_data)
 from server.models.apikey import (
     ErrorResponseModel,
     ResponseModel,
     ApikeySchema,
     UpdateApikeyModel,
 )
+from server.database import (
+    retrieve_apikeys,
+    add_apikey
+)
+from fastapi import APIRouter, Body, Header, Security, HTTPException, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.security import APIKeyHeader
 
-from server.security.auth import (check_api_data)
 
 router = APIRouter()
 
@@ -26,10 +25,16 @@ async def add_api_data(apikey: ApikeySchema = Body(...)):
 
 
 @router.get("/", response_description="apikey get data from the database")
-async def get_api_data(apikey: str = Header(None)):
+async def get_api_data(request: Request, apikey: str = Header(None)):
+    print(request.method)
+    print(request.url)
+    print(str(request.headers))
+    print(str(request.client.host))
+
     if not apikey:
         return ErrorResponseModel('error', 400, 'API Key is missing in the header')
     is_valid_apikey = await check_api_data(apikey)
+
     if not is_valid_apikey:
         return ErrorResponseModel('error', 403, "Invalid API key")
     else:
