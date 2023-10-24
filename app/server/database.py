@@ -35,7 +35,7 @@ async def retrieve_apikeys():
     if len(apikeys) == 0:
         return None
     else:
-        return apikeys[0]
+        return apikeys
 
 
 async def add_apikey(apikey_data: dict) -> dict:

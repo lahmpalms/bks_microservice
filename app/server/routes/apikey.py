@@ -7,7 +7,8 @@ from server.models.apikey import (
 )
 from server.database import (
     retrieve_apikeys,
-    add_apikey
+    add_apikey,
+    add_log
 )
 from fastapi import APIRouter, Body, Header, Security, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
@@ -26,10 +27,6 @@ async def add_api_data(apikey: ApikeySchema = Body(...)):
 
 @router.get("/", response_description="apikey get data from the database")
 async def get_api_data(request: Request, apikey: str = Header(None)):
-    print(request.method)
-    print(request.url)
-    print(str(request.headers))
-    print(str(request.client.host))
 
     if not apikey:
         return ErrorResponseModel('error', 400, 'API Key is missing in the header')
@@ -41,7 +38,28 @@ async def get_api_data(request: Request, apikey: str = Header(None)):
         try:
             all_apikey = await retrieve_apikeys()
             if all_apikey:
+                log_request = {
+                    "method": request.method,
+                    "url": request.url,
+                    "headers": str(request.headers) if request.headers else "None",
+                    "client": str(request.client.host) if request.client.host else "None",
+                    "response": str(all_apikey) if all_apikey else "None"
+                }
+                log_request_body = jsonable_encoder(log_request)
+                print('log_request_body', log_request_body)
+                await add_log(log_request_body)
                 return ResponseModel(all_apikey, "apikey data retrieved successfully")
             return ResponseModel(all_apikey, "Empty list returned")
+
         except Exception:
+            log_request = {
+                "method": request.method,
+                "url": request.url,
+                "headers": str(request.headers) if request.headers else "None",
+                "client": str(request.client.host) if request.client.host else "None",
+                "response": str(all_apikey) if all_apikey else "Internal Server Error"
+            }
+            log_request_body = jsonable_encoder(log_request)
+            print('log_request_body', log_request_body)
+            await add_log(log_request_body)
             return ErrorResponseModel('error', 500, 'Internal Server Error')
