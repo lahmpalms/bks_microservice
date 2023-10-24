@@ -5,18 +5,27 @@ from server.routes.ocr_routes import router as OcrRouter
 import time
 import os
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 api_endpoint = os.getenv('API_ENDPOINT')
 
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 app.include_router(ApikeyRouter, tags=[
                    "apikey_sevice"], prefix=f"{api_endpoint}/apikey")
 
-app.include_router(OcrRouter, tags=["ocr_service"], prefix=f"{api_endpoint}/ocr")
+app.include_router(
+    OcrRouter, tags=["ocr_service"], prefix=f"{api_endpoint}/ocr")
 
 
 @app.get("/", tags=["Root"])
