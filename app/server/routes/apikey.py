@@ -14,6 +14,7 @@ from fastapi import APIRouter, Body, Header, Security, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.security import APIKeyHeader
 
+from datetime import datetime
 
 router = APIRouter()
 
@@ -39,6 +40,7 @@ async def get_api_data(request: Request, apikey: str = Header(None)):
             all_apikey = await retrieve_apikeys()
             if all_apikey:
                 log_request = {
+                    "timestamp": datetime.now().isoformat(),
                     "method": request.method,
                     "url": request.url,
                     "headers": str(request.headers) if request.headers else "None",
@@ -46,13 +48,13 @@ async def get_api_data(request: Request, apikey: str = Header(None)):
                     "response": str(all_apikey) if all_apikey else "None"
                 }
                 log_request_body = jsonable_encoder(log_request)
-                print('log_request_body', log_request_body)
                 await add_log(log_request_body)
                 return ResponseModel(all_apikey, "apikey data retrieved successfully")
             return ResponseModel(all_apikey, "Empty list returned")
 
         except Exception:
             log_request = {
+                "timestamp": datetime.now().isoformat(),
                 "method": request.method,
                 "url": request.url,
                 "headers": str(request.headers) if request.headers else "None",
@@ -60,6 +62,5 @@ async def get_api_data(request: Request, apikey: str = Header(None)):
                 "response": str(all_apikey) if all_apikey else "Internal Server Error"
             }
             log_request_body = jsonable_encoder(log_request)
-            print('log_request_body', log_request_body)
             await add_log(log_request_body)
             return ErrorResponseModel('error', 500, 'Internal Server Error')
