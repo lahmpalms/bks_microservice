@@ -1,11 +1,11 @@
-from server.security.auth import (check_api_data)
-from server.models.apikey import (
+from app.server.security.auth import (check_api_data)
+from app.server.models.apikey import (
     ErrorResponseModel,
     ResponseModel,
     ApikeySchema,
     UpdateApikeyModel,
 )
-from server.database import (
+from app.server.database import (
     retrieve_apikeys,
     add_apikey,
     add_log

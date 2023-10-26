@@ -1,9 +1,9 @@
-from server.security.auth import (check_api_data)
-from server.models.apikey import (
+from app.server.security.auth import (check_api_data)
+from app.server.models.apikey import (
     ErrorResponseModel,
     ResponseModel,
 )
-from server.database import (
+from app.server.database import (
     add_log
 )
 
