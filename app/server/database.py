@@ -10,7 +10,7 @@ MONGO_PASSWORD = str(os.getenv("DB_PASSWORD"))
 MONGO_HOST = str(os.getenv("DB_HOST"))
 MONGO_PORT = int(os.getenv("DB_PORT"))
 MONGO_DB = str(os.getenv("DB_NAME"))
-MONGO_URI = f"mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}"
+MONGO_URI = f"mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}:27017"
 
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URI)
