@@ -4,16 +4,11 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-# MONGO_DETAILS = os.getenv("DB_URL")
-MONGO_USER = os.getenv("DB_USER")
-MONGO_PASSWORD = os.getenv("DB_PASSWORD")
-MONGO_HOST = os.getenv("DB_HOST")
-MONGO_PORT = os.getenv("DB_PORT")
-MONGO_DB = os.getenv("DB_NAME")
-MONGO_URI = f"mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}"
+MONGO_DETAILS = os.getenv("DB_URL")
+MONGO_DB = os.getenv("MONGO_DB")
 
 
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URI)
+client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 
 database = client[MONGO_DB]
 
