@@ -8,7 +8,7 @@ load_dotenv()
 MONGO_USER = str(os.getenv("DB_USER"))
 MONGO_PASSWORD = str(os.getenv("DB_PASSWORD"))
 MONGO_HOST = str(os.getenv("DB_HOST"))
-MONGO_PORT = str(os.getenv("DB_PORT"))
+MONGO_PORT = int(os.getenv("DB_PORT"))
 MONGO_DB = str(os.getenv("DB_NAME"))
 MONGO_URI = f"mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}"
 
