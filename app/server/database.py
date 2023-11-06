@@ -53,6 +53,18 @@ async def find_api(id: str) -> dict:
         return False
 
 
+async def check_userdata(user_data: dict) -> dict:
+    result = await apikey_collection.find_one({"email": user_data.email, "password": user_data.password})
+    if result:
+        result_data = {
+            "email": result.get("email"),
+            "apikey": result.get("apikey"),
+        }
+        return result_data
+    else:
+        return False
+
+
 async def add_log(log_data: dict) -> dict:
     log = await log_collection.insert_one(log_data)
     new_log = await log_collection.find_one({"_id": log.inserted_id})

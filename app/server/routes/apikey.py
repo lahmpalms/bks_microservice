@@ -1,16 +1,22 @@
-from app.server.security.auth import (check_api_data)
-from app.server.models.apikey import (
+from server.security.auth import (check_api_data, signJWT, signupJWT)
+from server.models.apikey import (
     ErrorResponseModel,
     ResponseModel,
     ApikeySchema,
     UpdateApikeyModel,
+    UserLoginSchema
 )
-from app.server.database import (
+from server.database import (
     retrieve_apikeys,
     add_apikey,
-    add_log
+    add_log,
+    check_userdata
 )
-from fastapi import APIRouter, Body, Header, Security, HTTPException, Request
+
+from server.security.auth import signJWT
+from server.security.auth_bearer import JWTBearer
+
+from fastapi import APIRouter, Body, Header, Security, HTTPException, Request, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.security import APIKeyHeader
 
@@ -19,16 +25,38 @@ from datetime import datetime
 router = APIRouter()
 
 
-@router.post("/", response_description="apikey generate data added into the database")
+async def check_user(data: UserLoginSchema):
+    is_valid_apikey = await check_userdata(data)
+    return is_valid_apikey
+
+
+@router.post("/user/login", tags=["apikey"])
+async def user_login(user: UserLoginSchema = Body(...)):
+    user_login = await check_user(user)
+    if user_login:
+        return signJWT(user_login)
+    else:
+        return {
+            "error": "Wrong login details!"
+        }
+
+
+@router.post("/user/signup", dependencies=[Depends(JWTBearer())], tags=["apikey"])
+async def create_user(user: ApikeySchema = Body(...)):
+    apikey = jsonable_encoder(user)
+    new_api = await add_apikey(apikey)
+    return signupJWT(user)
+
+
+@router.post("/", dependencies=[Depends(JWTBearer())], response_description="apikey generate data added into the database")
 async def add_api_data(apikey: ApikeySchema = Body(...)):
     apikey = jsonable_encoder(apikey)
     new_api = await add_apikey(apikey)
     return ResponseModel(new_api, "apikey generate added successfully.")
 
 
-@router.get("/", response_description="apikey get data from the database")
+@router.get("/", dependencies=[Depends(JWTBearer())], response_description="apikey get data from the database")
 async def get_api_data(request: Request, apikey: str = Header(None)):
-
     if not apikey:
         return ErrorResponseModel('error', 400, 'API Key is missing in the header')
     is_valid_apikey = await check_api_data(apikey)

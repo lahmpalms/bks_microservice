@@ -5,3 +5,5 @@ motor==2.5.1
 python-dotenv
 httpx
 python-multipart
+PyJWT==2.6.0
+python-decouple==3.7
