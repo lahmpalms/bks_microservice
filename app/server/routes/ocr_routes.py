@@ -79,7 +79,7 @@ async def health_check(request: Request, apikey: str = Header(None)):
 
 
 @router.post("/ocr_files", dependencies=[Depends(JWTBearer())], response_description="processing files on ocr models")
-async def process_on_ocr_models(response: Response, request: Request, apikey: str = Header(None), files: List[UploadFile] = File(...)):
+async def ocr_process(response: Response, request: Request, apikey: str = Header(None), files: List[UploadFile] = File(...)):
     if not apikey:
         return ErrorResponseModel('error', 400, 'API Key is missing in the header')
 
@@ -92,7 +92,7 @@ async def process_on_ocr_models(response: Response, request: Request, apikey: st
         async with httpx.AsyncClient() as client:
             form_data = [("files", (file.filename, file.file))
                          for file in files]
-            response = await client.post(f"{ocr_api_endpoint}/ocr_file", files=form_data)
+            response = await client.post(f"{ocr_api_endpoint}/ocr_file", files=form_data, timeout=None)
             print(response.json())
             if response.status_code == 201:
                 log_request = {
