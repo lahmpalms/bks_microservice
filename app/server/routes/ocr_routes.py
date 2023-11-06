@@ -7,7 +7,7 @@ from server.database import (
     add_log
 )
 
-from fastapi import APIRouter, Body, Header, Security, HTTPException, Response, Request, File, Form, status, UploadFile
+from fastapi import APIRouter, Body, Header, Security, HTTPException, Response, Request, File, Form, Depends, UploadFile
 from fastapi.encoders import jsonable_encoder
 from fastapi.security import APIKeyHeader
 
@@ -18,6 +18,8 @@ from datetime import datetime
 from typing import List
 import shutil
 
+from server.security.auth_bearer import JWTBearer
+
 
 load_dotenv()
 ocr_api_endpoint = os.getenv('OCR_MODEL_API_ENDPOINT')
@@ -25,7 +27,7 @@ ocr_api_endpoint = os.getenv('OCR_MODEL_API_ENDPOINT')
 router = APIRouter()
 
 
-@router.get("/", response_description="health check ocr models")
+@router.get("/", dependencies=[Depends(JWTBearer())], response_description="health check ocr models")
 async def health_check(request: Request, apikey: str = Header(None)):
     if not apikey:
         return ErrorResponseModel('error', 400, 'API Key is missing in the header')
@@ -76,7 +78,7 @@ async def health_check(request: Request, apikey: str = Header(None)):
             return ErrorResponseModel('error', 500, 'Internal Server Error')
 
 
-@router.post("/ocr_files", response_description="processing files on ocr models")
+@router.post("/ocr_files", dependencies=[Depends(JWTBearer())], response_description="processing files on ocr models")
 async def process_on_ocr_models(response: Response, request: Request, apikey: str = Header(None), files: List[UploadFile] = File(...)):
     if not apikey:
         return ErrorResponseModel('error', 400, 'API Key is missing in the header')

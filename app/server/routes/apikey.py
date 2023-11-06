@@ -13,7 +13,6 @@ from server.database import (
     check_userdata
 )
 
-from server.security.auth import signJWT
 from server.security.auth_bearer import JWTBearer
 
 from fastapi import APIRouter, Body, Header, Security, HTTPException, Request, Depends
@@ -30,7 +29,7 @@ async def check_user(data: UserLoginSchema):
     return is_valid_apikey
 
 
-@router.post("/user/login", tags=["apikey"])
+@router.post("/user/login", tags=["OAuth"])
 async def user_login(user: UserLoginSchema = Body(...)):
     user_login = await check_user(user)
     if user_login:
@@ -41,7 +40,7 @@ async def user_login(user: UserLoginSchema = Body(...)):
         }
 
 
-@router.post("/user/signup", dependencies=[Depends(JWTBearer())], tags=["apikey"])
+@router.post("/user/signup", dependencies=[Depends(JWTBearer())], tags=["OAuth"])
 async def create_user(user: ApikeySchema = Body(...)):
     apikey = jsonable_encoder(user)
     new_api = await add_apikey(apikey)
