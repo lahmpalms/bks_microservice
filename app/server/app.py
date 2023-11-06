@@ -2,6 +2,7 @@ from fastapi import FastAPI,  HTTPException, Security, Request
 from fastapi.security import APIKeyHeader
 from server.routes.apikey import router as ApikeyRouter
 from server.routes.ocr_routes import router as OcrRouter
+from server.routes.nlp_routes import router as NLPRouter
 import time
 import os
 from dotenv import load_dotenv
@@ -26,6 +27,9 @@ app.include_router(ApikeyRouter, tags=[
 
 app.include_router(
     OcrRouter, tags=["ocr_service"], prefix=f"{api_endpoint}/ocr")
+
+app.include_router(
+    NLPRouter, tags=["nlp_service"], prefix=f"{api_endpoint}/nlp")
 
 
 @app.get("/", tags=["Root"])
