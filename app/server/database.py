@@ -2,6 +2,7 @@ import motor.motor_asyncio
 from bson.objectid import ObjectId
 import os
 from dotenv import load_dotenv
+from passlib.context import CryptContext
 
 load_dotenv()
 MONGO_DETAILS = os.getenv("DB_URL")
@@ -14,8 +15,17 @@ database = client[MONGO_DB]
 
 apikey_collection = database.get_collection("apikey_collection")
 log_collection = database.get_collection("log_collection")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 # helper function
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 def apikey_helper(apikey) -> dict:
@@ -40,7 +50,9 @@ async def retrieve_apikeys():
 
 
 async def add_apikey(apikey_data: dict) -> dict:
-    apikey = await apikey_collection.insert_one(apikey_data)
+    payload = {'fullname': apikey_data["fullname"], 'email': apikey_data["email"],
+               'password': get_password_hash(apikey_data["password"]), 'apikey': apikey_data["apikey"]}
+    apikey = await apikey_collection.insert_one(payload)
     new_apikey = await apikey_collection.find_one({"_id": apikey.inserted_id})
     return apikey_helper(new_apikey)
 
@@ -54,13 +66,17 @@ async def find_api(id: str) -> dict:
 
 
 async def check_userdata(user_data: dict) -> dict:
-    result = await apikey_collection.find_one({"email": user_data.email, "password": user_data.password})
+    result = await apikey_collection.find_one({"email": user_data.email})
+
     if result:
-        result_data = {
-            "email": result.get("email"),
-            "apikey": result.get("apikey"),
-        }
-        return result_data
+        check = True if result["email"] == user_data.email and verify_password(
+            user_data.password, result["password"]) else False
+        if check:
+            result_data = {
+                "email": result.get("email"),
+                "apikey": result.get("apikey"),
+            }
+            return result_data
     else:
         return False
 

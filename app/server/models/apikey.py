@@ -23,6 +23,7 @@ class ApikeySchema(BaseModel):
             }
         }
 
+
 class UserLoginSchema(BaseModel):
     email: EmailStr = Field(...)
     password: str = Field(...)
@@ -34,6 +35,7 @@ class UserLoginSchema(BaseModel):
                 "password": "weakpassword"
             }
         }
+
 
 class UpdateApikeyModel(BaseModel):
     fullname: Optional[str]
