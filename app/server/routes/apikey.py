@@ -1,19 +1,19 @@
-from server.security.auth import (check_api_data, signJWT, signupJWT)
-from server.models.apikey import (
+from app.server.security.auth import (check_api_data, signJWT, signupJWT)
+from app.server.models.apikey import (
     ErrorResponseModel,
     ResponseModel,
     ApikeySchema,
     UpdateApikeyModel,
     UserLoginSchema
 )
-from server.database import (
+from app.server.database import (
     retrieve_apikeys,
     add_apikey,
     add_log,
     check_userdata
 )
 
-from server.security.auth_bearer import JWTBearer
+from app.server.security.auth_bearer import JWTBearer
 
 from fastapi import APIRouter, Body, Header, Security, HTTPException, Request, Depends
 from fastapi.encoders import jsonable_encoder

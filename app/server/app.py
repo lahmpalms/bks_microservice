@@ -1,9 +1,9 @@
 from fastapi import FastAPI,  HTTPException, Security, Request
 from fastapi.security import APIKeyHeader
-from server.routes.apikey import router as ApikeyRouter
-from server.routes.ocr_routes import router as OcrRouter
-from server.routes.nlp_routes import router as NLPRouter
-from server.routes.peopledetect_routes import router as PeopledetectRouter
+from app.server.routes.apikey import router as ApikeyRouter
+from app.server.routes.ocr_routes import router as OcrRouter
+from app.server.routes.nlp_routes import router as NLPRouter
+from app.server.routes.peopledetect_routes import router as PeopledetectRouter
 import time
 import os
 from dotenv import load_dotenv

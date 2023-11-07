@@ -7,11 +7,11 @@ from decouple import config
 from fastapi import APIRouter, Body
 from fastapi.encoders import jsonable_encoder
 
-from server.database import (
+from app.server.database import (
     retrieve_apikeys,
     find_api
 )
-from server.models.apikey import (
+from app.server.models.apikey import (
     ErrorResponseModel,
     ResponseModel,
     ApikeySchema,
