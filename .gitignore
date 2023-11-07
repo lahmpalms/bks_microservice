@@ -37,6 +37,7 @@ __pycache__/
 # Environment and Docker Compose files
 .env.local
 .dockerignore
+.env
 
 # Database files
 db.sqlite
