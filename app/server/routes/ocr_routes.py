@@ -124,3 +124,4 @@ async def ocr_process(response: Response, request: Request, apikey: str = Header
         log_request_body = jsonable_encoder(log_request)
         await add_log(log_request_body)
         return ErrorResponseModel('error', 500, 'Internal Server Error')
+
