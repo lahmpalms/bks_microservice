@@ -3,6 +3,7 @@ from server.models.apikey import (
     ErrorResponseModel,
     ResponseModel,
 )
+from server.models.peopledetectservices import (FormDataSchema)
 from server.database import (
     add_log
 )
@@ -73,7 +74,7 @@ async def health_check(request: Request, apikey: str = Header(None)):
 
 
 @router.post("/ocr_files", dependencies=[Depends(JWTBearer())], response_description="processing files on ocr models")
-async def ocr_process(response: Response, request: Request, apikey: str = Header(None), files: List[UploadFile] = File(...)):
+async def ocr_process(response: Response, request: Request, files: FormDataSchema, apikey: str = Header(None)):
     if not apikey:
         return ErrorResponseModel('error', 400, 'API Key is missing in the header')
 
@@ -124,4 +125,3 @@ async def ocr_process(response: Response, request: Request, apikey: str = Header
         log_request_body = jsonable_encoder(log_request)
         await add_log(log_request_body)
         return ErrorResponseModel('error', 500, 'Internal Server Error')
-
