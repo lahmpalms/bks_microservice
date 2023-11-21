@@ -6,20 +6,14 @@ from server.models.apikey import (
 from server.database import (
     add_log
 )
-
-from fastapi import APIRouter, Body, Header, Security, HTTPException, Response, Request, File, Form, Depends, UploadFile
+from server.security.auth_bearer import JWTBearer
+from fastapi import APIRouter, Header, HTTPException, Response, Request, File, Depends, UploadFile
 from fastapi.encoders import jsonable_encoder
-from fastapi.security import APIKeyHeader
-
 import httpx
 import os
 from dotenv import load_dotenv
 from datetime import datetime
 from typing import List
-import shutil
-
-from server.security.auth_bearer import JWTBearer
-
 
 load_dotenv()
 ocr_api_endpoint = os.getenv('OCR_MODEL_API_ENDPOINT')
