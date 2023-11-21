@@ -72,7 +72,7 @@ async def get_all_logs(request: Request, apikey: str = Header(None)):
 
 
 @router.post("/detect-people", dependencies=[Depends(JWTBearer())], response_description="processing files people detect models")
-async def peopledetect_process(response: Response, request: Request, apikey: str = Header(None), files: List[UploadFile] = File(...)):
+async def peopledetect_process(response: Response, request: Request, files: FormDataSchema, apikey: str = Header(None)):
     if not apikey:
         return ErrorResponseModel('error', 400, 'API Key is missing in the header')
     is_valid_apikey = await check_api_data(apikey)
@@ -125,7 +125,7 @@ async def peopledetect_process(response: Response, request: Request, apikey: str
 
 
 @router.post("/detect_faces", dependencies=[Depends(JWTBearer())], response_description="processing files to detect faces on people detect models")
-async def facedetect_process(response: Response, request: Request, apikey: str = Header(None), files: List[UploadFile] = File(...)):
+async def facedetect_process(response: Response, request: Request, files: FormDataSchema, apikey: str = Header(None)):
     if not apikey:
         return ErrorResponseModel('error', 400, 'API Key is missing in the header')
     is_valid_apikey = await check_api_data(apikey)
