@@ -3,7 +3,6 @@ from app.server.models.apikey import (
     ErrorResponseModel,
     ResponseModel,
     ApikeySchema,
-    UpdateApikeyModel,
     UserLoginSchema
 )
 from app.server.database import (
@@ -12,13 +11,9 @@ from app.server.database import (
     add_log,
     check_userdata
 )
-
-from app.server.security.auth_bearer import JWTBearer
-
-from fastapi import APIRouter, Body, Header, Security, HTTPException, Request, Depends
+from server.security.auth_bearer import JWTBearer
+from fastapi import APIRouter, Body, Header, Request, Depends
 from fastapi.encoders import jsonable_encoder
-from fastapi.security import APIKeyHeader
-
 from datetime import datetime
 
 
