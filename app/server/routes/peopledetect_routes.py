@@ -3,11 +3,11 @@ from app.server.models.apikey import (
     ErrorResponseModel,
     ResponseModel,
 )
-from server.models.peopledetectservices import (FormDataSchema)
-from server.database import (
+from app.server.models.peopledetectservices import (FormDataSchema)
+from app.server.database import (
     add_log
 )
-from server.security.auth_bearer import JWTBearer
+from app.server.security.auth_bearer import JWTBearer
 from fastapi import APIRouter, Header, HTTPException, Request, Depends, Response, File, UploadFile
 from fastapi.encoders import jsonable_encoder
 import httpx

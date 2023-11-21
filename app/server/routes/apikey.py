@@ -11,7 +11,7 @@ from app.server.database import (
     add_log,
     check_userdata
 )
-from server.security.auth_bearer import JWTBearer
+from app.server.security.auth_bearer import JWTBearer
 from fastapi import APIRouter, Body, Header, Request, Depends
 from fastapi.encoders import jsonable_encoder
 from datetime import datetime
