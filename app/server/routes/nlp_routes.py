@@ -35,6 +35,7 @@ async def health_check(request: Request, apikey: str = Header(None)):
                 print('response', response)
                 if response.status_code == 200:
                     log_request = {
+                        "apikey": request.headers.get("apikey"),
                         "timestamp": datetime.now().isoformat(),
                         "method": request.method,
                         "url": request.url,
@@ -47,6 +48,7 @@ async def health_check(request: Request, apikey: str = Header(None)):
                     return ResponseModel(None, "Request to NLP 3rd-party API successful")
                 else:
                     log_request = {
+                        "apikey": request.headers.get("apikey"),
                         "timestamp": datetime.now().isoformat(),
                         "method": request.method,
                         "url": request.url,
@@ -60,6 +62,7 @@ async def health_check(request: Request, apikey: str = Header(None)):
                         status_code=response.status_code, detail="Request to NLP 3rd-party API failed")
         except Exception:
             log_request = {
+                "apikey": request.headers.get("apikey"),
                 "timestamp": datetime.now().isoformat(),
                 "method": request.method,
                 "url": request.url,
@@ -87,6 +90,7 @@ async def keyphrases_process(request: Request, payload: KeyphrasesSchema, apikey
                 response = await client.post(f"{nlp_api_endpoint}/api/v1/keyphrases/", json=req_info["comments"], timeout=None)
                 if response.status_code == 200:
                     log_request = {
+                        "apikey": request.headers.get("apikey"),
                         "timestamp": datetime.now().isoformat(),
                         "method": request.method,
                         "url": request.url,
@@ -99,6 +103,7 @@ async def keyphrases_process(request: Request, payload: KeyphrasesSchema, apikey
                     return ResponseModel(response.json(), "Request to NLP 3rd-party API successful")
                 else:
                     log_request = {
+                        "apikey": request.headers.get("apikey"),
                         "timestamp": datetime.now().isoformat(),
                         "method": request.method,
                         "url": request.url,
@@ -111,6 +116,7 @@ async def keyphrases_process(request: Request, payload: KeyphrasesSchema, apikey
                     return ErrorResponseModel('error', response.status_code, 'Request to NLP 3rd-party API failed')
         except Exception:
             log_request = {
+                "apikey": request.headers.get("apikey"),
                 "timestamp": datetime.now().isoformat(),
                 "method": request.method,
                 "url": request.url,
@@ -138,6 +144,7 @@ async def topic_modeling_process(request: Request, payload: TopicmodellingSchema
                 response = await client.post(f"{nlp_api_endpoint}/api/v1/topic-modeling/", json=req_info, timeout=None)
                 if response.status_code == 200:
                     log_request = {
+                        "apikey": request.headers.get("apikey"),
                         "timestamp": datetime.now().isoformat(),
                         "method": request.method,
                         "url": request.url,
@@ -150,6 +157,7 @@ async def topic_modeling_process(request: Request, payload: TopicmodellingSchema
                     return ResponseModel(response.json(), "Request to NLP 3rd-party API successful")
                 else:
                     log_request = {
+                        "apikey": request.headers.get("apikey"),
                         "timestamp": datetime.now().isoformat(),
                         "method": request.method,
                         "url": request.url,
@@ -162,6 +170,7 @@ async def topic_modeling_process(request: Request, payload: TopicmodellingSchema
                     return ErrorResponseModel('error', response.status_code, 'Request to NLP 3rd-party API failed')
         except Exception:
             log_request = {
+                "apikey": request.headers.get("apikey"),
                 "timestamp": datetime.now().isoformat(),
                 "method": request.method,
                 "url": request.url,
@@ -189,6 +198,7 @@ async def sentiment_analysis_modeling_process(request: Request, payload: Sentime
                 response = await client.post(f"{nlp_api_endpoint}/api/v1/sentiment-analysis/", json=req_info, timeout=None)
                 if response.status_code == 200:
                     log_request = {
+                        "apikey": request.headers.get("apikey"),
                         "timestamp": datetime.now().isoformat(),
                         "method": request.method,
                         "url": request.url,
@@ -201,6 +211,7 @@ async def sentiment_analysis_modeling_process(request: Request, payload: Sentime
                     return ResponseModel(response.json(), "Request to NLP 3rd-party API successful")
                 else:
                     log_request = {
+                        "apikey": request.headers.get("apikey"),
                         "timestamp": datetime.now().isoformat(),
                         "method": request.method,
                         "url": request.url,
@@ -213,6 +224,7 @@ async def sentiment_analysis_modeling_process(request: Request, payload: Sentime
                     return ErrorResponseModel('error', response.status_code, 'Request to NLP 3rd-party API failed')
         except Exception:
             log_request = {
+                "apikey": request.headers.get("apikey"),
                 "timestamp": datetime.now().isoformat(),
                 "method": request.method,
                 "url": request.url,
