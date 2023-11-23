@@ -3,7 +3,7 @@ from app.server.models.apikey import (
     ErrorResponseModel,
     ResponseModel,
 )
-from server.database import (
+from app.server.database import (
     add_log
 )
 from app.server.security.auth_bearer import JWTBearer
