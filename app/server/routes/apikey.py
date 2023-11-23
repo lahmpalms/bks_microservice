@@ -63,6 +63,7 @@ async def get_api_data(request: Request, apikey: str = Header(None)):
             all_apikey = await retrieve_apikeys()
             if all_apikey:
                 log_request = {
+                    "apikey": request.headers.get("apikey"),
                     "timestamp": datetime.now().isoformat(),
                     "method": request.method,
                     "url": request.url,
@@ -77,6 +78,7 @@ async def get_api_data(request: Request, apikey: str = Header(None)):
 
         except Exception:
             log_request = {
+                "apikey": request.headers.get("apikey"),
                 "timestamp": datetime.now().isoformat(),
                 "method": request.method,
                 "url": request.url,

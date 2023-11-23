@@ -3,8 +3,7 @@ from app.server.models.apikey import (
     ErrorResponseModel,
     ResponseModel,
 )
-from app.server.models.peopledetectservices import (FormDataSchema)
-from app.server.database import (
+from server.database import (
     add_log
 )
 from app.server.security.auth_bearer import JWTBearer
@@ -33,9 +32,12 @@ async def health_check(request: Request, apikey: str = Header(None)):
     else:
         try:
             async with httpx.AsyncClient() as client:
+                print('dddd', (request.headers.get("authorization")))
+                print('aaddd', (request.headers.get("apikey")))
                 response = await client.get(f"{ocr_api_endpoint}")
                 if response.status_code == 200:
                     log_request = {
+                        "apikey": request.headers.get("apikey"),
                         "timestamp": datetime.now().isoformat(),
                         "method": request.method,
                         "url": request.url,
@@ -48,6 +50,7 @@ async def health_check(request: Request, apikey: str = Header(None)):
                     return ResponseModel(None, "Request to OCR 3rd-party API successful")
                 else:
                     log_request = {
+                        "apikey": request.headers.get("apikey"),
                         "timestamp": datetime.now().isoformat(),
                         "method": request.method,
                         "url": request.url,
@@ -61,6 +64,7 @@ async def health_check(request: Request, apikey: str = Header(None)):
                         status_code=response.status_code, detail="Request to OCR 3rd-party API failed")
         except Exception:
             log_request = {
+                "apikey": request.headers.get("apikey"),
                 "timestamp": datetime.now().isoformat(),
                 "method": request.method,
                 "url": request.url,
@@ -74,7 +78,7 @@ async def health_check(request: Request, apikey: str = Header(None)):
 
 
 @router.post("/ocr_files", dependencies=[Depends(JWTBearer())], response_description="processing files on ocr models")
-async def ocr_process(response: Response, request: Request, files: FormDataSchema, apikey: str = Header(None)):
+async def ocr_process(response: Response, request: Request, apikey: str = Header(None), files: List[UploadFile] = File(...)):
     if not apikey:
         return ErrorResponseModel('error', 400, 'API Key is missing in the header')
 
@@ -91,6 +95,7 @@ async def ocr_process(response: Response, request: Request, files: FormDataSchem
             print(response.json())
             if response.status_code == 201:
                 log_request = {
+                    "apikey": request.headers.get("apikey"),
                     "timestamp": datetime.now().isoformat(),
                     "method": request.method,
                     "url": request.url,
@@ -103,6 +108,7 @@ async def ocr_process(response: Response, request: Request, files: FormDataSchem
                 return ResponseModel(response.json(), 'Request to OCR 3rd-party API successful')
             else:
                 log_request = {
+                    "apikey": request.headers.get("apikey"),
                     "timestamp": datetime.now().isoformat(),
                     "method": request.method,
                     "url": request.url,
@@ -115,6 +121,7 @@ async def ocr_process(response: Response, request: Request, files: FormDataSchem
                 return ErrorResponseModel('error', response.status_code, 'Request to OCR 3rd-party API failed')
     except Exception:
         log_request = {
+            "apikey": request.headers.get("apikey"),
             "timestamp": datetime.now().isoformat(),
             "method": request.method,
             "url": request.url,
