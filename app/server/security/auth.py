@@ -21,6 +21,8 @@ from app.server.models.apikey import (
 JWT_SECRET = config("secret")
 JWT_ALGORITHM = config("algorithm")
 
+expired_token_time = 60 * 60 * 24  # 24 hr timeout
+
 
 def token_response(token: str):
     return {
@@ -31,7 +33,7 @@ def token_response(token: str):
 def signJWT(user: dict) -> Dict[str, str]:
     payload = {
         "user_id": user["email"],
-        "expires": time.time() + 600,
+        "expires": time.time() + expired_token_time,
         "apikey": user["apikey"]
     }
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
@@ -42,7 +44,7 @@ def signJWT(user: dict) -> Dict[str, str]:
 def signupJWT(user: dict) -> Dict[str, str]:
     payload = {
         "user_id": user.email,
-        "expires": time.time() + 600,
+        "expires": time.time() + expired_token_time,
         "apikey": user.apikey
     }
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
