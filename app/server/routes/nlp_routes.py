@@ -6,7 +6,8 @@ from server.models.apikey import (
 from server.models.nlpservices import (
     KeyphrasesSchema, TopicmodellingSchema, SentimentanalysisSchema)
 from server.database import (
-    add_log
+    add_log,
+    check_access_service
 )
 from server.security.auth_bearer import JWTBearer
 from fastapi import APIRouter, Header, HTTPException, Request, Depends
@@ -16,6 +17,7 @@ from decouple import config
 import httpx
 
 nlp_api_endpoint = config("NLP_MODEL_API_ENDPOINT")
+service_id = config("SERVICE_NLP_ID")
 
 router = APIRouter()
 
@@ -29,10 +31,12 @@ async def health_check(request: Request, apikey: str = Header(None)):
     if not is_valid_apikey:
         return ErrorResponseModel('error', 403, "Invalid API key")
     else:
+        is_access = await check_access_service(service_id, apikey)
+        if not is_access:
+            return ErrorResponseModel('error', 403, "your account is not authorized to access this service")
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(f"{nlp_api_endpoint}/api/v1/")
-                print('response', response)
                 if response.status_code == 200:
                     log_request = {
                         "apikey": request.headers.get("apikey"),
@@ -84,6 +88,9 @@ async def keyphrases_process(request: Request, payload: KeyphrasesSchema, apikey
     if not is_valid_apikey:
         return ErrorResponseModel('error', 403, "Invalid API key")
     else:
+        is_access = await check_access_service(service_id, apikey)
+        if not is_access:
+            return ErrorResponseModel('error', 403, "your account is not authorized to access this service")
         req_info = await request.json()
         try:
             async with httpx.AsyncClient() as client:
@@ -138,6 +145,9 @@ async def topic_modeling_process(request: Request, payload: TopicmodellingSchema
     if not is_valid_apikey:
         return ErrorResponseModel('error', 403, "Invalid API key")
     else:
+        is_access = await check_access_service(service_id, apikey)
+        if not is_access:
+            return ErrorResponseModel('error', 403, "your account is not authorized to access this service")
         req_info = await request.json()
         try:
             async with httpx.AsyncClient() as client:
@@ -192,6 +202,9 @@ async def sentiment_analysis_modeling_process(request: Request, payload: Sentime
     if not is_valid_apikey:
         return ErrorResponseModel('error', 403, "Invalid API key")
     else:
+        is_access = await check_access_service(service_id, apikey)
+        if not is_access:
+            return ErrorResponseModel('error', 403, "your account is not authorized to access this service")
         req_info = await request.json()
         try:
             async with httpx.AsyncClient() as client:

@@ -4,7 +4,8 @@ from server.models.apikey import (
     ResponseModel,
 )
 from server.database import (
-    add_log
+    add_log,
+    check_access_service
 )
 from server.security.auth_bearer import JWTBearer
 from fastapi import APIRouter, Header, HTTPException, Response, Request, File, Depends, UploadFile
@@ -14,9 +15,11 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 from typing import List
+from decouple import config
 
 load_dotenv()
-ocr_api_endpoint = os.getenv('OCR_MODEL_API_ENDPOINT')
+ocr_api_endpoint = config('OCR_MODEL_API_ENDPOINT')
+service_id = config('SERVICE_OCR_ID')
 
 router = APIRouter()
 
@@ -30,10 +33,11 @@ async def health_check(request: Request, apikey: str = Header(None)):
     if not is_valid_apikey:
         return ErrorResponseModel('error', 403, "Invalid API key")
     else:
+        is_access = await check_access_service(service_id, apikey)
+        if not is_access:
+            return ErrorResponseModel('error', 403, "your account is not authorized to access this service")
         try:
             async with httpx.AsyncClient() as client:
-                print('dddd', (request.headers.get("authorization")))
-                print('aaddd', (request.headers.get("apikey")))
                 response = await client.get(f"{ocr_api_endpoint}")
                 if response.status_code == 200:
                     log_request = {
@@ -86,7 +90,10 @@ async def ocr_process(response: Response, request: Request, apikey: str = Header
 
     if not is_valid_apikey:
         return ErrorResponseModel('error', 403, "Invalid API key")
-
+    else:
+        is_access = await check_access_service(service_id, apikey)
+        if not is_access:
+            return ErrorResponseModel('error', 403, "your account is not authorized to access this service")
     try:
         async with httpx.AsyncClient() as client:
             form_data = [("files", (file.filename, file.file))

@@ -4,6 +4,7 @@ from server.routes.apikey import router as ApikeyRouter
 from server.routes.ocr_routes import router as OcrRouter
 from server.routes.nlp_routes import router as NLPRouter
 from server.routes.peopledetect_routes import router as PeopledetectRouter
+from server.routes.service_routes import router as ServiceRoutes
 import time
 import os
 from dotenv import load_dotenv
@@ -34,6 +35,9 @@ app.include_router(
 
 app.include_router(
     PeopledetectRouter, tags=["peopledetect_service"], prefix=f"{api_endpoint}/peopledetect")
+
+app.include_router(ServiceRoutes, tags=[
+                   "service"], prefix=f"{api_endpoint}/service")
 
 
 @app.get("/", tags=["Root"])

@@ -9,12 +9,16 @@ from server.database import (
     retrieve_apikeys,
     add_apikey,
     add_log,
-    check_userdata
+    check_userdata,
+    check_access_service
 )
 from server.security.auth_bearer import JWTBearer
 from fastapi import APIRouter, Body, Header, Request, Depends
 from fastapi.encoders import jsonable_encoder
 from datetime import datetime
+from decouple import config
+
+service_id = config("SERVICE_ADMIN_ID")
 
 
 router = APIRouter()
@@ -59,6 +63,9 @@ async def get_api_data(request: Request, apikey: str = Header(None)):
     if not is_valid_apikey:
         return ErrorResponseModel('error', 403, "Invalid API key")
     else:
+        is_access = await check_access_service(service_id, apikey)
+        if not is_access:
+            return ErrorResponseModel('error', 403, "your account is not authorized to access this service")
         try:
             all_apikey = await retrieve_apikeys()
             if all_apikey:

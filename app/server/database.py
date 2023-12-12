@@ -3,6 +3,7 @@ from bson.objectid import ObjectId
 import os
 from dotenv import load_dotenv
 from passlib.context import CryptContext
+from fastapi import HTTPException
 
 load_dotenv()
 MONGO_DETAILS = os.getenv("DB_URL")
@@ -15,6 +16,7 @@ database = client[MONGO_DB]
 
 apikey_collection = database.get_collection("apikey_collection")
 log_collection = database.get_collection("log_collection")
+service_collection = database.get_collection("service_collection")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -86,31 +88,66 @@ async def add_log(log_data: dict) -> dict:
     new_log = await log_collection.find_one({"_id": log.inserted_id})
     return (new_log)
 
-# # Retrieve a student with a matching ID
-# async def retrieve_student(id: str) -> dict:
-#     student = await student_collection.find_one({"_id": ObjectId(id)})
-#     if student:
-#         return student_helper(student)
+
+async def create_service(service_data: dict) -> dict:
+    try:
+        document = {
+            "service_name": service_data.service_name,
+            "apikey": service_data.apikey
+        }
+        result = await service_collection.insert_one(document)
+        service_id = result.inserted_id
+        return {"service_id": str(service_id)}
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error creating service: {str(e)}")
 
 
-# # Update a student with a matching ID
-# async def update_student(id: str, data: dict):
-#     # Return false if an empty request body is sent.
-#     if len(data) < 1:
-#         return False
-#     student = await student_collection.find_one({"_id": ObjectId(id)})
-#     if student:
-#         updated_student = await student_collection.update_one(
-#             {"_id": ObjectId(id)}, {"$set": data}
-#         )
-#         if updated_student:
-#             return True
-#         return False
+async def patch_service_apikey(service_id: str, apikey_update) -> dict:
+    try:
+        # Convert the service_id to ObjectId
+        service_id_obj = ObjectId(service_id)
+
+        # Define the update operation to only update the apikey field
+        update_operation = {
+            "$set": {"apikey": apikey_update.apikey}
+        }
+
+        # Perform the update operation
+        result = await service_collection.update_one(
+            {"_id": service_id_obj},
+            update_operation
+        )
+
+        # Check if the update was successful
+        if result.modified_count == 1:
+            return {"message": "API key updated successfully"}
+        else:
+            raise HTTPException(
+                status_code=404, detail="Service not found")
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error updating API key: {str(e)}")
 
 
-# # Delete a student from the database
-# async def delete_student(id: str):
-#     student = await student_collection.find_one({"_id": ObjectId(id)})
-#     if student:
-#         await student_collection.delete_one({"_id": ObjectId(id)})
-#         return True
+async def check_access_service(service_id: str, apikey_to_check: str) -> bool:
+    try:
+        # Convert the service_id to ObjectId
+        service_id_obj = ObjectId(service_id)
+        # Perform a query to find documents where the given API key is in the 'apikey' array
+        cursor = service_collection.find({
+            "_id": service_id_obj,
+            "apikey": {"$in": [apikey_to_check]}
+        })
+
+        # Iterate over the cursor using await
+        async for document in cursor:
+            return True  # If there is at least one document, return True
+
+        # If no documents were found, return False
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error checking access service: {str(e)}")
